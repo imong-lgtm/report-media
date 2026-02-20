@@ -41,10 +41,16 @@
                     Messages
                 </a>
             </nav>
-            <div class="p-6 border-t border-gray-800">
-                <a href="{{ route('home') }}" class="text-sm font-medium text-gray-500 hover:text-white transition">
+            <div class="p-6 border-t border-gray-800 space-y-4">
+                <a href="{{ route('home') }}" class="block text-sm font-medium text-gray-500 hover:text-white transition">
                     &larr; Back to Site
                 </a>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="w-full text-left text-sm font-medium text-red-400 hover:text-red-300 transition">
+                        Logout
+                    </button>
+                </form>
             </div>
         </aside>
 

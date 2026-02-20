@@ -13,6 +13,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        \App\Models\User::updateOrCreate(
+        ['email' => 'admin@telecom.test'],
+        [
+            'name' => 'Administrator',
+            'password' => \Illuminate\Support\Facades\Hash::make('password123'),
+        ]
+        );
+
         $this->call([
             ServiceSeeder::class ,
             ProjectSeeder::class ,
