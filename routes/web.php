@@ -20,4 +20,5 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class);
     Route::resource('projects', \App\Http\Controllers\Admin\ProjectController::class);
     Route::resource('teams', \App\Http\Controllers\Admin\TeamController::class);
+    Route::resource('messages', \App\Http\Controllers\Admin\MessageController::class)->only(['index', 'show', 'destroy']);
 });
