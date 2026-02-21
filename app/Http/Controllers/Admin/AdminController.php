@@ -4,9 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Service;
-use App\Models\Project;
-use App\Models\Team;
+use App\Models\Article;
+use App\Models\Category;
 use App\Models\Message;
 
 class AdminController extends Controller
@@ -14,9 +13,8 @@ class AdminController extends Controller
     public function __invoke()
     {
         $stats = [
-            'services' => Service::count(),
-            'projects' => Project::count(),
-            'teams' => Team::count(),
+            'articles' => Article::count(),
+            'categories' => Category::count(),
             'messages' => Message::count(),
         ];
 

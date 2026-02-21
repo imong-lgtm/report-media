@@ -12,18 +12,65 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
-Route::get('/setup-admin', function () {
-    $user = User::updateOrCreate(
-    ['email' => 'admin@telecom.test'],
-    [
-        'name' => 'Administrator',
-        'password' => Hash::make('password123'),
-    ]
-    );
-    return "Admin account created! Email: admin@telecom.test | Password: password123 <br><a href='/login'>Go to Login</a>";
-});
+// SECURITY WARNING: The following setup routes should be REMOVED or RESTRICTED before public deployment.
+if (app()->environment('local')) {
+    Route::get('/setup-admin', function () {
+        return view('setup');
+    });
+
+    Route::post('/setup-admin', function (\Illuminate\Http\Request $request) {
+        try {
+            $data = $request->validate([
+                'email' => 'required|email|max:255',
+                'password' => 'required|string|min:8',
+            ]);
+
+            $output = "";
+
+            // 1. Run Migrations
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+            $output .= "<b>Migration Output:</b><br>" . nl2br(\Illuminate\Support\Facades\Artisan::output()) . "<br>";
+
+            // 1.5 Run Seeders
+            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
+            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ArticleSeeder', '--force' => true]);
+            $output .= "<b>Seeding Output:</b><br>Berita & Kategori berhasil dimuat!<br>";
+
+            // 1.6 Storage Link & Directory Fix
+            \Illuminate\Support\Facades\Artisan::call('storage:link');
+            $storagePath = storage_path('app/public/articles');
+            if (!file_exists($storagePath)) {
+                mkdir($storagePath, 0777, true);
+            }
+            $output .= "<b>Storage Fix:</b><br>Storage link created & articles directory ready!<br>";
+
+            // 2. Force Add Column if missing (SQLite Manual Fix)
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('users', 'role')) {
+                $output .= "Column 'role' not found after migration. Attempting manual fix...<br>";
+                \Illuminate\Support\Facades\DB::statement('ALTER TABLE users ADD COLUMN role TEXT DEFAULT "admin"');
+                $output .= "Manual fix applied!<br>";
+            }
+
+            // 3. Create/Update User
+            $user = User::updateOrCreate(
+            ['email' => $data['email']],
+            [
+                'name' => 'Superadmin',
+                'password' => Hash::make($data['password']),
+                'role' => 'superadmin',
+            ]
+            );
+
+            return back()->with('success', $output . "<br><div style='color:green; font-weight:bold;'>Superadmin account created & Database Fixed!</div><br>Email: " . $data['email'] . "<br><a href='/login' style='text-decoration:underline;'>Go to Login</a>");
+        }
+        catch (\Exception $e) {
+            return back()->with('error', "Error during setup: " . $e->getMessage());
+        }
+    });
+}
 
 Route::get('/', [PageController::class , 'home'])->name('home');
+Route::get('/article/{slug}', [PageController::class , 'showArticle'])->name('articles.show');
 Route::get('/about', [PageController::class , 'about'])->name('about');
 Route::get('/services', [PageController::class , 'services'])->name('services');
 Route::get('/projects', [PageController::class , 'projects'])->name('projects');
@@ -38,8 +85,8 @@ Route::post('/logout', [AuthController::class , 'logout'])->name('logout');
 // Admin Routes
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/', \App\Http\Controllers\Admin\AdminController::class)->name('dashboard');
-    Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class);
-    Route::resource('projects', \App\Http\Controllers\Admin\ProjectController::class);
-    Route::resource('teams', \App\Http\Controllers\Admin\TeamController::class);
+    Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class)->except(['show', 'edit', 'update']);
+    Route::resource('articles', \App\Http\Controllers\Admin\ArticleController::class);
+    Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->except(['edit', 'update', 'show'])->middleware('superadmin');
     Route::resource('messages', \App\Http\Controllers\Admin\MessageController::class)->only(['index', 'show', 'destroy']);
 });

@@ -1,139 +1,105 @@
 @extends('layouts.app')
 
-@section('content')
-<!-- Hero Section -->
-<div class="relative bg-white overflow-hidden">
-    <div class="max-w-7xl mx-auto">
-        <div class="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
-            <svg class="hidden lg:block absolute right-0 inset-y-0 h-full w-48 text-white transform translate-x-1/2" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-                <polygon points="50,0 100,0 50,100 0,100" />
-            </svg>
+@section('title', 'Laporan Berita Terkini & Terpercaya')
 
-            <main class="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
-                <div class="sm:text-center lg:text-left">
-                    <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-                        <span class="block xl:inline">Next Generation</span>
-                        <span class="block text-blue-600 xl:inline">Telecommunications</span>
-                    </h1>
-                    <p class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                        Connecting businesses and individuals with high-speed, reliable, and secure communication solutions. Experience the future of connectivity today.
-                    </p>
-                    <div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
-                        <div class="rounded-md shadow">
-                            <a href="{{ route('services') }}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10">
-                                Get Started
-                            </a>
-                        </div>
-                        <div class="mt-3 sm:mt-0 sm:ml-3">
-                            <a href="{{ route('contact') }}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 md:py-4 md:text-lg md:px-10">
-                                Contact Us
-                            </a>
-                        </div>
+@section('content')
+<main class="container mx-auto px-6 py-12">
+    <!-- Featured Hero Section -->
+    @if($featuredArticles->count() > 0)
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-20">
+        <div class="lg:col-span-2 group cursor-pointer relative overflow-hidden rounded-[2.5rem]">
+            @php $main = $featuredArticles->first(); @endphp
+            <div class="aspect-[16/9] w-full overflow-hidden">
+                <img src="{{ $main->image ? asset('storage/' . $main->image) : 'https://images.unsplash.com/photo-1504715603422-59e1b7987e3f?q=80&w=2070&auto=format&fit=crop' }}" 
+                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+            <div class="absolute bottom-0 left-0 p-10 text-white w-full">
+                <span class="px-4 py-1.5 bg-blue-600 rounded-full text-xs font-bold uppercase tracking-widest mb-4 inline-block">{{ $main->category->name }}</span>
+                <a href="{{ route('articles.show', $main->slug) }}">
+                    <h2 class="text-4xl md:text-5xl font-serif font-black leading-tight group-hover:underline">{{ $main->title }}</h2>
+                </a>
+                <p class="mt-4 text-slate-300 font-medium line-clamp-2 max-w-2xl">{{ Str::limit(strip_tags($main->content), 150) }}</p>
+                <div class="mt-6 flex items-center gap-3 text-sm font-bold">
+                    <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-xs">RM</div>
+                    <span>report.media &bull; {{ $main->created_at->diffForHumans() }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-8">
+            <h3 class="font-bold text-xl flex items-center gap-2">
+                <span class="h-1 w-8 bg-blue-600 rounded-full"></span>
+                Berita Utama
+            </h3>
+            <div class="space-y-8">
+                @foreach($featuredArticles->skip(1) as $art)
+                <div class="group flex gap-5">
+                    <div class="flex-1">
+                        <span class="text-xs font-bold text-blue-600 uppercase tracking-widest mb-1 block">{{ $art->category->name }}</span>
+                        <a href="{{ route('articles.show', $art->slug) }}">
+                            <h4 class="font-serif font-bold text-lg leading-tight group-hover:text-blue-600 transition">{{ $art->title }}</h4>
+                        </a>
+                        <span class="text-[10px] text-slate-400 font-bold mt-2 block">{{ $art->created_at->format('d M Y') }}</span>
                     </div>
                 </div>
-            </main>
-        </div>
-    </div>
-    <div class="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-        <img class="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full" src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2850&q=80" alt="Telecom Tower">
-    </div>
-</div>
-
-<!-- Features Section (Services) -->
-<div class="py-12 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="lg:text-center">
-            <h2 class="text-base text-blue-600 font-semibold tracking-wide uppercase">Our Services</h2>
-            <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-                A better way to connect
-            </p>
-        </div>
-
-        <div class="mt-10">
-            <dl class="space-y-10 md:space-y-0 md:grid md:grid-cols-3 md:gap-x-8 md:gap-y-10">
-                @forelse($services as $service)
-                <div class="relative p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition">
-                    <dt>
-                        <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                            </svg>
-                        </div>
-                        <p class="ml-16 text-lg leading-6 font-medium text-gray-900">{{ $service->title }}</p>
-                    </dt>
-                    <dd class="mt-2 ml-16 text-base text-gray-500">
-                        {{ \Illuminate\Support\Str::limit($service->description, 100) }}
-                    </dd>
-                </div>
-                @empty
-                 <p class="col-span-3 text-center text-gray-500">No services available.</p>
-                @endforelse
-            </dl>
-            <div class="mt-10 text-center">
-                <a href="{{ route('services') }}" class="text-blue-600 font-semibold hover:underline">View all services &rarr;</a>
+                @endforeach
             </div>
         </div>
-    </div>
-</div>
+    </section>
+    @endif
 
-<!-- Projects Section -->
-<div class="py-16 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="lg:text-center mb-12">
-            <h2 class="text-base text-blue-600 font-semibold tracking-wide uppercase">Success Stories</h2>
-            <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-                Our Latest Projects
-            </p>
+    <!-- Latest Stories Grid -->
+    <div class="flex flex-col lg:flex-row gap-12">
+        <div class="lg:w-2/3">
+            <h3 class="text-3xl font-serif font-black mb-10 flex items-center gap-4">
+                Laporan Terbaru
+                <span class="flex-1 h-px bg-slate-100"></span>
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                @foreach($latestArticles as $article)
+                <div class="group">
+                    <div class="aspect-video w-full rounded-3xl overflow-hidden mb-6 bg-slate-100">
+                        <img src="{{ $article->image ? asset('storage/' . $article->image) : 'https://images.unsplash.com/photo-1546422904-90eab23c3d7e?q=80&w=2072&auto=format&fit=crop' }}" 
+                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <span class="text-xs font-bold text-blue-600 uppercase tracking-widest mb-3 block">{{ $article->category->name }}</span>
+                    <a href="{{ route('articles.show', $article->slug) }}">
+                        <h4 class="text-xl font-serif font-bold leading-tight group-hover:text-blue-600 transition">{{ $article->title }}</h4>
+                    </a>
+                    <p class="mt-4 text-slate-500 text-sm font-medium leading-relaxed line-clamp-3">
+                        {{ Str::limit(strip_tags($article->content), 120) }}
+                    </p>
+                    <div class="mt-6 flex items-center justify-between">
+                        <span class="text-xs text-slate-400 font-bold italic">{{ $article->created_at->diffForHumans() }}</span>
+                        <a href="{{ route('articles.show', $article->slug) }}" class="text-xs font-black text-blue-600 group-hover:translate-x-1 transition flex items-center gap-1">
+                            BACA SELENGKAPNYA
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"/></svg>
+                        </a>
+                    </div>
+                </div>
+                @endforeach
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            @forelse($projects as $project)
-            <div class="group relative bg-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
-                <div class="aspect-w-16 aspect-h-9 overflow-hidden">
-                    <img src="{{ $project->image }}" alt="{{ $project->title }}" class="object-cover w-full h-64 group-hover:scale-105 transition-transform duration-500">
-                </div>
-                <div class="p-6">
-                    <p class="text-sm font-semibold text-blue-600 mb-1">{{ $project->client }}</p>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">{{ $project->title }}</h3>
-                    <p class="text-gray-600 text-sm line-clamp-2">{{ $project->description }}</p>
+        <!-- Sidebar -->
+        <aside class="lg:w-1/3 space-y-12">
+            <div class="bg-slate-50 rounded-[2.5rem] p-10 border border-slate-100">
+                <h4 class="text-xl font-serif font-black mb-8">Redaksi report.media</h4>
+                <p class="text-slate-500 text-sm font-medium">Laporan mendalam, investigasi tajam, dan berita terpercaya dari seluruh penjuru negeri untuk Anda.</p>
+            </div>
+
+            <div class="p-10 bg-blue-600 rounded-[2.5rem] text-white overflow-hidden relative group">
+                <div class="absolute -top-10 -right-10 h-40 w-40 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
+                <h4 class="text-2xl font-serif font-black mb-4 relative z-10">Buletin report.media</h4>
+                <p class="text-blue-100 text-sm font-medium mb-8 relative z-10">Dapatkan berita investigasi terbaik langsung di email Anda setiap hari.</p>
+                <div class="flex flex-col gap-3 relative z-10">
+                    <input type="email" placeholder="Alamat email Anda" class="w-full px-5 py-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-blue-200 outline-none focus:bg-white/20 transition-all font-medium">
+                    <button class="w-full py-4 bg-white text-blue-600 font-bold rounded-2xl shadow-lg transition-transform hover:-translate-y-0.5">Berlangganan</button>
                 </div>
             </div>
-            @empty
-            <p class="col-span-3 text-center text-gray-500">Coming soon.</p>
-            @endforelse
-        </div>
+        </aside>
     </div>
-</div>
-
-<!-- Team Preview Section -->
-<div class="py-16 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row items-center justify-between mb-12">
-            <div class="mb-6 md:mb-0">
-                <h2 class="text-base text-blue-600 font-semibold tracking-wide uppercase">Who We Are</h2>
-                <p class="mt-2 text-3xl font-extrabold text-gray-900 sm:text-4xl">
-                    Meet Our Leadership
-                </p>
-            </div>
-            <a href="{{ route('about') }}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
-                About Us
-            </a>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            @forelse($teams as $member)
-            <div class="text-center group">
-                <div class="relative inline-block mb-4">
-                    <div class="absolute inset-0 bg-blue-600 rounded-2xl rotate-3 group-hover:rotate-6 transition-transform"></div>
-                    <img class="relative h-48 w-48 object-cover rounded-2xl shadow-lg" src="{{ $member->photo }}" alt="{{ $member->name }}">
-                </div>
-                <h3 class="text-lg font-bold text-gray-900">{{ $member->name }}</h3>
-                <p class="text-sm text-blue-600 font-medium">{{ $member->role }}</p>
-            </div>
-            @empty
-            <p class="col-span-4 text-center text-gray-500">Team members will be listed here.</p>
-            @endforelse
-        </div>
-    </div>
-</div>
+</main>
 @endsection

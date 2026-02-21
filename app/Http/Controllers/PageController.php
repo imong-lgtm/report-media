@@ -2,19 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Service;
-use App\Models\Project;
-use App\Models\Team;
+use App\Models\Article;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
     public function home()
     {
-        $services = Service::take(3)->get();
-        $projects = Project::latest()->take(3)->get();
-        $teams = Team::all();
-        return view('home', compact('services', 'projects', 'teams'));
+        $featuredArticles = Article::with('category')->where('status', 'published')->latest()->take(5)->get();
+        $latestArticles = Article::with('category')->where('status', 'published')->latest()->skip(5)->take(10)->get();
+        $categories = Category::all();
+
+        return view('home', compact('featuredArticles', 'latestArticles', 'categories'));
+    }
+
+    public function showArticle($slug)
+    {
+        $article = Article::with(['category', 'user'])->where('slug', $slug)->firstOrFail();
+        $relatedArticles = Article::where('category_id', $article->category_id)
+            ->where('id', '!=', $article->id)
+            ->latest()
+            ->take(3)
+            ->get();
+
+        return view('articles.show', compact('article', 'relatedArticles'));
     }
 
     public function about()

@@ -3,21 +3,17 @@
 @section('title', 'Dashboard')
 
 @section('content')
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <p class="text-sm font-medium text-gray-500 uppercase tracking-widest mb-1">Services</p>
-        <p class="text-3xl font-extrabold text-gray-900">{{ $stats['services'] }}</p>
+        <p class="text-sm font-medium text-gray-500 uppercase tracking-widest mb-1">Total Berita</p>
+        <p class="text-3xl font-extrabold text-gray-900">{{ $stats['articles'] }}</p>
     </div>
     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <p class="text-sm font-medium text-gray-500 uppercase tracking-widest mb-1">Projects</p>
-        <p class="text-3xl font-extrabold text-gray-900">{{ $stats['projects'] }}</p>
+        <p class="text-sm font-medium text-gray-500 uppercase tracking-widest mb-1">Kategori</p>
+        <p class="text-3xl font-extrabold text-gray-900">{{ $stats['categories'] }}</p>
     </div>
     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <p class="text-sm font-medium text-gray-500 uppercase tracking-widest mb-1">Team Members</p>
-        <p class="text-3xl font-extrabold text-gray-900">{{ $stats['teams'] }}</p>
-    </div>
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <p class="text-sm font-medium text-gray-500 uppercase tracking-widest mb-1">Unread Messages</p>
+        <p class="text-sm font-medium text-gray-500 uppercase tracking-widest mb-1">Pesan Masuk</p>
         <p class="text-3xl font-extrabold text-gray-900">{{ $stats['messages'] }}</p>
     </div>
 </div>
