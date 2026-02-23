@@ -19,7 +19,7 @@
     ],
     "env": {
         "APP_ENV": "production",
-        "APP_DEBUG": "true",
+        "APP_DEBUG": "false",
         "SESSION_DRIVER": "cookie",
         "LOG_CHANNEL": "stderr",
         "DB_CONNECTION": "sqlite",

@@ -12,8 +12,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
-// SECURITY WARNING: Run this ONCE then restrict access.
-if (true) { // Temporarily allow for initial cloud setup
+// SECURITY: Only enable on local or for restricted one-time setup
+if (app()->environment('local')) {
     Route::get('/setup-admin', function () {
         return view('setup');
     });
@@ -25,33 +25,21 @@ if (true) { // Temporarily allow for initial cloud setup
                 'password' => 'required|string|min:8',
             ]);
 
-            $output = "";
-
-            // 1. Run Migrations (Fresh to ensure schema is correct on Vercel)
+            // 1. Run Migrations
             \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
-            $output .= "<b>Migration Output:</b><br>" . nl2br(\Illuminate\Support\Facades\Artisan::output()) . "<br>";
 
             // 1.5 Run Seeders
             \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
             \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ArticleSeeder', '--force' => true]);
-            $output .= "<b>Seeding Output:</b><br>Berita & Kategori berhasil dimuat!<br>";
 
-            // 1.6 Directory Fix (Only if not on Vercel or using /tmp)
+            // 1.6 Directory Fix
             $storagePath = storage_path('app/public/articles');
             if (!file_exists($storagePath)) {
                 @mkdir($storagePath, 0777, true);
             }
-            $output .= "<b>Storage Fix:</b><br>Articles directory ready!<br>";
 
-            // 2. Force Add Column if missing (SQLite Manual Fix)
-            if (!\Illuminate\Support\Facades\Schema::hasColumn('users', 'role')) {
-                $output .= "Column 'role' not found after migration. Attempting manual fix...<br>";
-                \Illuminate\Support\Facades\DB::statement('ALTER TABLE users ADD COLUMN role TEXT DEFAULT "admin"');
-                $output .= "Manual fix applied!<br>";
-            }
-
-            // 3. Create/Update User
-            $user = User::updateOrCreate(
+            // 2. Create/Update User
+            User::updateOrCreate(
             ['email' => $data['email']],
             [
                 'name' => 'Superadmin',
@@ -60,9 +48,7 @@ if (true) { // Temporarily allow for initial cloud setup
             ]
             );
 
-            $output .= "<br><div style='color:green; font-weight:bold; font-size:1.2rem;'>SUCCESS! Superadmin account created & Database Fixed!</div><br>Email: " . $data['email'] . "<br><br><a href='/login' style='padding:10px 20px; background:blue; color:white; border-radius:8px; text-decoration:none;'>Go to Login Page</a><br><br><b>Technical Details:</b><br>" . $output;
-
-            return response($output);
+            return response("<div style='color:green; font-weight:bold; font-size:1.2rem; text-align:center; padding-top:50px;'>SUCCESS! Superadmin account created.<br><br><a href='/login' style='padding:10px 20px; background:blue; color:white; border-radius:8px; text-decoration:none;'>Go to Login Page</a></div>");
         }
         catch (\Exception $e) {
             return back()->with('error', "Error during setup: " . $e->getMessage());
