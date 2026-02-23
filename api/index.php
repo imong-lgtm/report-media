@@ -17,6 +17,14 @@ foreach ($tmpDirs as $dir) {
     }
 }
 
+// Force Laravel to use /tmp for all cache files
+$cachePath = '/tmp/storage/framework/cache';
+$_ENV['APP_CONFIG_CACHE'] = $cachePath . '/config.php';
+$_ENV['APP_EVENTS_CACHE'] = $cachePath . '/events.php';
+$_ENV['APP_PACKAGES_CACHE'] = $cachePath . '/packages.php';
+$_ENV['APP_ROUTES_CACHE'] = $cachePath . '/routes.php';
+$_ENV['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
+
 try {
     require __DIR__ . '/../public/index.php';
 }
