@@ -60,7 +60,9 @@ if (true) { // Temporarily allow for initial cloud setup
             ]
             );
 
-            return back()->with('success', $output . "<br><div style='color:green; font-weight:bold;'>Superadmin account created & Database Fixed!</div><br>Email: " . $data['email'] . "<br><a href='/login' style='text-decoration:underline;'>Go to Login</a>");
+            $output .= "<br><div style='color:green; font-weight:bold; font-size:1.2rem;'>SUCCESS! Superadmin account created & Database Fixed!</div><br>Email: " . $data['email'] . "<br><br><a href='/login' style='padding:10px 20px; background:blue; color:white; border-radius:8px; text-decoration:none;'>Go to Login Page</a><br><br><b>Technical Details:</b><br>" . $output;
+
+            return response($output);
         }
         catch (\Exception $e) {
             return back()->with('error', "Error during setup: " . $e->getMessage());
