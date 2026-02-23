@@ -17,6 +17,17 @@ foreach ($tmpDirs as $dir) {
     }
 }
 
+// Create empty SQLite database if it doesn't exist
+$dbPath = '/tmp/database.sqlite';
+if (!file_exists($dbPath)) {
+    touch($dbPath);
+}
+
+// Force HTTPS on Vercel
+if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+    $_SERVER['HTTPS'] = 'on';
+}
+
 // Force Laravel to use /tmp for all cache files (Satisfy ProviderRepository and PackageManifest)
 $cachePath = '/tmp/storage/framework/cache';
 $cacheFiles = [
