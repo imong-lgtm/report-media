@@ -27,8 +27,8 @@ if (true) { // Temporarily allow for initial cloud setup
 
             $output = "";
 
-            // 1. Run Migrations
-            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+            // 1. Run Migrations (Fresh to ensure schema is correct on Vercel)
+            \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
             $output .= "<b>Migration Output:</b><br>" . nl2br(\Illuminate\Support\Facades\Artisan::output()) . "<br>";
 
             // 1.5 Run Seeders
