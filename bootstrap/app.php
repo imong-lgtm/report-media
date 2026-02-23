@@ -3,8 +3,29 @@
 /* |-------------------------------------------------------------------------- | Create The Application |-------------------------------------------------------------------------- | | The first thing we will do is create a new Laravel application instance | which serves as the "glue" for all the components of Laravel, and is | the IoC container for the system binding all of the various parts. | */
 
 error_reporting(E_ALL & ~E_DEPRECATED);
-$app = new Illuminate\Foundation\Application(
-    $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)    );
+/* |-------------------------------------------------------------------------- | Vercel Application Class |-------------------------------------------------------------------------- | | Laravel needs a writable bootstrap/cache directory. On Vercel, we override | the paths to use the writable /tmp directory. | */
+class VercelApplication extends Illuminate\Foundation\Application
+{
+    public function getCachedConfigPath()
+    {
+        return '/tmp/storage/framework/cache/config.php';
+    }
+    public function getCachedServicesPath()
+    {
+        return '/tmp/storage/framework/cache/services.php';
+    }
+    public function getCachedPackagesPath()
+    {
+        return '/tmp/storage/framework/cache/packages.php';
+    }
+    public function getCachedRoutesPath()
+    {
+        return '/tmp/storage/framework/cache/routes.php';
+    }
+}
+
+$app = new VercelApplication(
+    $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__));
 
 /* |-------------------------------------------------------------------------- | Vercel Storage Patch |-------------------------------------------------------------------------- | | Laravel needs a writable storage directory. On Vercel, only /tmp is writable. | */
 if (isset($_SERVER['VERCEL_URL']) || env('APP_ENV') === 'production') {
