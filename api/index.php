@@ -49,17 +49,19 @@ putenv("VIEW_COMPILED_PATH=/tmp/storage/framework/views");
 try {
     $app = require __DIR__ . '/../public/index.php';
 
-    // AUTO-REPAIR: If database is wiped (Vercel cold start), rebuild it
+    // AUTO-REPAIR: If database is wiped or empty, rebuild it
     if (!isset($_SERVER['ARTISAN_RUNNING'])) {
         try {
             if (!\Illuminate\Support\Facades\Schema::hasTable('users')) {
                 \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
                 \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
                 \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ArticleSeeder', '--force' => true]);
+            }
 
-                // Create Default Fallback Admin
+            // Always ensure our default admin exists
+            if (\Illuminate\Support\Facades\Schema::hasTable('users')) {
                 \App\Models\User::updateOrCreate(
-                ['email' => 'admin@report.media'],
+                ['email' => 'admin@telecom.test'],
                 [
                     'name' => 'Admin Redaksi',
                     'password' => \Illuminate\Support\Facades\Hash::make('password123'),
