@@ -36,13 +36,12 @@ if (true) { // Temporarily allow for initial cloud setup
             \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ArticleSeeder', '--force' => true]);
             $output .= "<b>Seeding Output:</b><br>Berita & Kategori berhasil dimuat!<br>";
 
-            // 1.6 Storage Link & Directory Fix
-            \Illuminate\Support\Facades\Artisan::call('storage:link');
+            // 1.6 Directory Fix (Only if not on Vercel or using /tmp)
             $storagePath = storage_path('app/public/articles');
             if (!file_exists($storagePath)) {
-                mkdir($storagePath, 0777, true);
+                @mkdir($storagePath, 0777, true);
             }
-            $output .= "<b>Storage Fix:</b><br>Storage link created & articles directory ready!<br>";
+            $output .= "<b>Storage Fix:</b><br>Articles directory ready!<br>";
 
             // 2. Force Add Column if missing (SQLite Manual Fix)
             if (!\Illuminate\Support\Facades\Schema::hasColumn('users', 'role')) {
