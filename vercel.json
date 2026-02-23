@@ -2,14 +2,15 @@
     "version": 2,
     "framework": null,
     "functions": {
-        "api/*.php": {
-            "runtime": "vercel-php@0.6.0"
+        "api/index.php": {
+            "runtime": "vercel-php@0.6.1"
         }
     },
     "routes": [
         {
             "src": "/(css|js|images|fonts|vendor)/(.*)",
-            "dest": "/public/$1/$2"
+            "dest": "/public/$1/$2",
+            "continue": true
         },
         {
             "src": "/(.*)",
