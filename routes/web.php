@@ -12,8 +12,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
-// SECURITY WARNING: The following setup routes should be REMOVED or RESTRICTED before public deployment.
-if (app()->environment('local')) {
+// SECURITY WARNING: Run this ONCE then restrict access.
+if (true) { // Temporarily allow for initial cloud setup
     Route::get('/setup-admin', function () {
         return view('setup');
     });
