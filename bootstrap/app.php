@@ -6,6 +6,11 @@ error_reporting(E_ALL & ~E_DEPRECATED);
 $app = new Illuminate\Foundation\Application(
     $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)    );
 
+/* |-------------------------------------------------------------------------- | Vercel Storage Patch |-------------------------------------------------------------------------- | | Laravel needs a writable storage directory. On Vercel, only /tmp is writable. | */
+if (isset($_SERVER['VERCEL_URL']) || env('APP_ENV') === 'production') {
+    $app->useStoragePath('/tmp/storage');
+}
+
 /* |-------------------------------------------------------------------------- | Bind Important Interfaces |-------------------------------------------------------------------------- | | Next, we need to bind some important interfaces into the container so | we will be able to resolve them when needed. The kernels serve the | incoming requests to this application from both the web and CLI. | */
 
 $app->singleton(
