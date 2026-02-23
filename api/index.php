@@ -1,8 +1,8 @@
 <?php
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// ini_set('display_errors', 0);
+// ini_set('display_startup_errors', 0);
+// error_reporting(0);
 
 // Ensure temporary storage directories exist for Vercel
 $tmpDirs = [
@@ -47,7 +47,31 @@ $_ENV['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
 putenv("VIEW_COMPILED_PATH=/tmp/storage/framework/views");
 
 try {
-    require __DIR__ . '/../public/index.php';
+    $app = require __DIR__ . '/../public/index.php';
+
+    // AUTO-REPAIR: If database is wiped (Vercel cold start), rebuild it
+    if (!isset($_SERVER['ARTISAN_RUNNING'])) {
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('users')) {
+                \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
+                \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
+                \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ArticleSeeder', '--force' => true]);
+
+                // Create Default Fallback Admin
+                \App\Models\User::updateOrCreate(
+                ['email' => 'admin@report.media'],
+                [
+                    'name' => 'Admin Redaksi',
+                    'password' => \Illuminate\Support\Facades\Hash::make('password123'),
+                    'role' => 'superadmin',
+                ]
+                );
+            }
+        }
+        catch (\Throwable $dbError) {
+        // Silently fail or log if DB is not ready yet
+        }
+    }
 }
 catch (\Throwable $e) {
     echo "<h1>Vercel Deployment Error</h1>";
