@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Pencarian: ' . $article->title)
+@section('title', 'Pencarian: ' . $query)
 
 @section('content')
     <div class="bg-white py-12">
