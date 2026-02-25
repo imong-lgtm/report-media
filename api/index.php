@@ -54,11 +54,17 @@ try {
     // AUTO-REPAIR: Ensure DB is ready BEFORE handling the request
     if (!isset($_SERVER['ARTISAN_RUNNING'])) {
         try {
-            if (!\Illuminate\Support\Facades\Schema::hasTable('users')) {
+            // Check if essential tables exist
+            $tablesExist = \Illuminate\Support\Facades\Schema::hasTable('users') &&
+                \Illuminate\Support\Facades\Schema::hasTable('articles');
+
+            if (!$tablesExist) {
+                // Run migrations and seeders
                 \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
                 \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
                 \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ArticleSeeder', '--force' => true]);
 
+                // Create Default Fallback Admin
                 \App\Models\User::updateOrCreate(
                 ['email' => 'admin@telecom.test'],
                 [
@@ -70,6 +76,8 @@ try {
             }
         }
         catch (\Throwable $e) {
+            // Log error to a file in /tmp for debugging if possible
+            file_put_contents('/tmp/repair_error.log', $e->getMessage());
         }
     }
 
