@@ -1,5 +1,6 @@
 <?php
-// Last Deployment Fix for Newspaper Site (Auto-Repair): 2026-02-26_v2
+// Last Deployment Force Fix: 2026-02-26 00:52:00 WIB
+// Compatible with Laravel 8/9/10/11 - Bypassing Facade root errors.
 
 use Illuminate\Http\Request;
 
@@ -62,10 +63,17 @@ try {
         }
     });
 
-    $app->handleRequest(Request::capture());
+    // Handle Request (Compatible with Laravel 8/9/10)
+    $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+    $response = $kernel->handle(
+        $request = Request::capture()
+    )->send();
+    $kernel->terminate($request, $response);
+
 } catch (\Throwable $e) {
     http_response_code(500);
     echo "<h1>Vercel Deployment Error</h1>";
     echo "<h3>Message: " . $e->getMessage() . "</h3>";
-    echo "<pre>" . $e->getTraceAsString() . "</pre>";
+    echo "<p><b>File:</b> " . $e->getFile() . " on line " . $e->getLine() . "</p>";
+    echo "<b>Stack Trace:</b><pre>" . $e->getTraceAsString() . "</pre>";
 }
