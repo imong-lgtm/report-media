@@ -79,4 +79,19 @@ class PageController extends Controller
 
         return view('category', compact('category', 'articles', 'categoriesWithArticles'));
     }
+
+    public function search(Request $request)
+    {
+        $query = $request->input('q');
+        $articles = Article::with(['category', 'user'])
+            ->where('status', 'published')
+            ->where(function ($q) use ($query) {
+                $q->where('title', 'LIKE', "%{$query}%")
+                    ->orWhere('content', 'LIKE', "%{$query}%");
+            })
+            ->latest()
+            ->paginate(12);
+
+        return view('search', compact('articles', 'query'));
+    }
 }

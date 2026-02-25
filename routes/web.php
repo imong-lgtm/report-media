@@ -62,6 +62,7 @@ Route::get('/services', [PageController::class, 'services'])->name('services');
 Route::get('/projects', [PageController::class, 'projects'])->name('projects');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::get('/category/{slug}', [PageController::class, 'category'])->name('category.show');
+Route::get('/search', [PageController::class, 'search'])->name('search');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 // Auth Routes

@@ -82,9 +82,9 @@
                 </div>
             </div>
             <div class="flex gap-4">
-                <a href="#" class="hover:text-white transition">Tentang Kami</a>
-                <a href="#" class="hover:text-white transition">Redaksi</a>
-                <a href="#" class="hover:text-white transition">Pedoman Media</a>
+                <a href="{{ route('about') }}" class="hover:text-white transition">Tentang Kami</a>
+                <a href="{{ route('about') }}#dewan-redaksi" class="hover:text-white transition">Redaksi</a>
+                <a href="{{ route('contact') }}" class="hover:text-white transition">Pedoman Media</a>
             </div>
         </div>
     </div>
@@ -103,15 +103,17 @@
             </a>
 
             <!-- Search Area -->
-            <div class="w-full md:w-96 relative group">
-                <input type="text" placeholder="Telusuri berita hari ini..."
+            <form action="{{ route('search') }}" method="GET" class="w-full md:w-96 relative group">
+                <input type="text" name="q" value="{{ request('q') }}" placeholder="Telusuri berita hari ini..."
                     class="w-full pl-12 pr-4 py-3 bg-slate-100 rounded-xl text-sm font-medium outline-none focus:bg-white focus:ring-4 focus:ring-blue-100 transition-all border border-transparent focus:border-blue-200">
-                <svg class="h-5 w-5 absolute left-4 top-3 text-slate-400 group-focus-within:text-blue-500 transition-colors"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-            </div>
+                <button type="submit"
+                    class="absolute left-4 top-3 text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
+            </form>
 
             <!-- User/Auth -->
             <div class="hidden lg:flex items-center gap-4">
@@ -231,10 +233,14 @@
                 <div>
                     <h4 class="text-white font-black uppercase text-xs tracking-widest mb-8">Tentang Redaksi</h4>
                     <ul class="space-y-4 text-[13px] font-bold">
-                        <li><a href="#" class="hover:text-blue-400 transition">Profil Perusahaan</a></li>
-                        <li><a href="#" class="hover:text-blue-400 transition">Kontak & Iklan</a></li>
-                        <li><a href="#" class="hover:text-blue-400 transition">Pedoman Media Siber</a></li>
-                        <li><a href="#" class="hover:text-blue-400 transition">Kode Etik Jurnalistik</a></li>
+                        <li><a href="{{ route('about') }}" class="hover:text-blue-400 transition">Profil Perusahaan</a>
+                        </li>
+                        <li><a href="{{ route('contact') }}" class="hover:text-blue-400 transition">Kontak & Iklan</a>
+                        </li>
+                        <li><a href="{{ route('about') }}#dewan-redaksi" class="hover:text-blue-400 transition">Pedoman
+                                Media Siber</a></li>
+                        <li><a href="{{ route('about') }}#dewan-redaksi" class="hover:text-blue-400 transition">Kode
+                                Etik Jurnalistik</a></li>
                     </ul>
                 </div>
 
