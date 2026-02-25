@@ -208,12 +208,12 @@
                         terpercaya untuk masyarakat Indonesia.
                     </p>
                     <div class="flex gap-4">
-                        <a href="#"
-                            class="h-10 w-10 flex items-center justify-center bg-slate-800 rounded-xl hover:bg-blue-600 transition text-white">FB</a>
-                        <a href="#"
-                            class="h-10 w-10 flex items-center justify-center bg-slate-800 rounded-xl hover:bg-blue-400 transition text-white">TW</a>
-                        <a href="#"
-                            class="h-10 w-10 flex items-center justify-center bg-slate-800 rounded-xl hover:bg-gradient-to-tr from-orange-400 to-rose-600 transition text-white">IG</a>
+                        <a href="https://facebook.com"
+                            class="h-10 w-10 flex items-center justify-center bg-slate-800 rounded-xl hover:bg-blue-600 transition text-white text-[10px] font-black uppercase">FB</a>
+                        <a href="https://twitter.com"
+                            class="h-10 w-10 flex items-center justify-center bg-slate-800 rounded-xl hover:bg-blue-400 transition text-white text-[10px] font-black uppercase">TW</a>
+                        <a href="https://instagram.com"
+                            class="h-10 w-10 flex items-center justify-center bg-slate-800 rounded-xl hover:bg-gradient-to-tr from-orange-400 to-rose-600 transition text-white text-[10px] font-black uppercase">IG</a>
                     </div>
                 </div>
 
@@ -242,6 +242,15 @@
                         <li><a href="{{ route('about') }}#dewan-redaksi" class="hover:text-blue-400 transition">Kode
                                 Etik Jurnalistik</a></li>
                     </ul>
+                    <div class="mt-8 pt-8 border-t border-slate-800">
+                        <h4 class="text-white font-black uppercase text-[10px] tracking-widest mb-4 opacity-50">
+                            Headquarters</h4>
+                        <p class="text-[11px] font-bold text-slate-500 leading-relaxed">
+                            Gedung Report Media, Lt. 5<br>
+                            Jl. Kebon Sirih No. 17-19<br>
+                            Jakarta Pusat, 10340
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Newsletter -->
@@ -249,12 +258,13 @@
                     <h4 class="text-white font-black uppercase text-xs tracking-widest mb-8">Newsletter Investigasi</h4>
                     <p class="text-xs font-medium mb-6">Dapatkan berita mendalam pilihan redaksi langsung di inbox Anda.
                     </p>
-                    <div class="flex flex-col gap-3">
-                        <input type="email" placeholder="Email Anda"
+                    <form action="{{ route('newsletter.subscribe') }}" method="POST" class="flex flex-col gap-3">
+                        @csrf
+                        <input type="email" name="email" placeholder="Email Anda" required
                             class="bg-slate-800 border-none rounded-xl px-5 py-3.5 text-xs font-bold focus:ring-2 focus:ring-blue-500 outline-none text-white transition-all">
-                        <button
+                        <button type="submit"
                             class="bg-blue-600 text-white py-3.5 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition active:scale-95">Langganan</button>
-                    </div>
+                    </form>
                 </div>
             </div>
 
