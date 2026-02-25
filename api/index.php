@@ -1,5 +1,6 @@
 <?php
-// Last Deployment Force Fix: 2026-02-26 00:52:00 WIB
+// DEPLOY_ID: KING_EMYU_GOAL_2026_V1
+// Last Deployment Force Fix: 2026-02-26 00:53:00 WIB
 // Compatible with Laravel 8/9/10/11 - Bypassing Facade root errors.
 
 use Illuminate\Http\Request;
