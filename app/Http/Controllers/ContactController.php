@@ -18,6 +18,8 @@ class ContactController extends Controller
         Message::create($request->all());
 
         return back()->with('success', 'Message sent successfully!');
+    }
+
     public function newsletter(Request $request)
     {
         $request->validate([
