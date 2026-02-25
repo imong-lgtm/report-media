@@ -47,19 +47,17 @@ $_ENV['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
 putenv("VIEW_COMPILED_PATH=/tmp/storage/framework/views");
 
 try {
-    $app = require __DIR__ . '/../public/index.php';
+    $app = require_once __DIR__ . '/../bootstrap/app.php';
+    $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 
-    // AUTO-REPAIR: If database is wiped or empty, rebuild it
+    // AUTO-REPAIR: Ensure DB is ready BEFORE handling the request
     if (!isset($_SERVER['ARTISAN_RUNNING'])) {
         try {
             if (!\Illuminate\Support\Facades\Schema::hasTable('users')) {
                 \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
                 \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
                 \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ArticleSeeder', '--force' => true]);
-            }
 
-            // Always ensure our default admin exists
-            if (\Illuminate\Support\Facades\Schema::hasTable('users')) {
                 \App\Models\User::updateOrCreate(
                 ['email' => 'admin@telecom.test'],
                 [
@@ -70,10 +68,15 @@ try {
                 );
             }
         }
-        catch (\Throwable $dbError) {
-        // Silently fail or log if DB is not ready yet
+        catch (\Throwable $e) {
         }
     }
+
+    $response = $kernel->handle(
+        $request = Illuminate\Http\Request::capture()
+    )->send();
+
+    $kernel->terminate($request, $response);
 }
 catch (\Throwable $e) {
     echo "<h1>Vercel Deployment Error</h1>";
