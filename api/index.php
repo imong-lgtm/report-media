@@ -68,18 +68,25 @@ try {
         \Illuminate\Support\Facades\URL::forceScheme('https');
 
         // SQLite fallback for Vercel
-        $tempDb = '/tmp/database.sqlite';
-        if (!file_exists($tempDb)) {
-            @touch($tempDb);
-            @chmod($tempDb, 0666);
+        if (env('DB_CONNECTION') === 'sqlite' || !env('DB_CONNECTION')) {
+            $tempDb = '/tmp/database.sqlite';
+            if (!file_exists($tempDb)) {
+                @touch($tempDb);
+                @chmod($tempDb, 0666);
+            }
+            $app['config']->set('database.connections.sqlite.database', $tempDb);
         }
-        $app['config']->set('database.connections.sqlite.database', $tempDb);
 
-        // Auto-migrate if needed
+        // Auto-migrate if needed (Skip if already migrated)
         try {
-            if (!$app->make('db')->connection('sqlite')->getSchemaBuilder()->hasTable('users')) {
+            $db = $app->make('db');
+            $schema = $db->connection()->getSchemaBuilder();
+
+            if (!$schema->hasTable('users')) {
                 $kernel = $app->make(\Illuminate\Contracts\Console\Kernel::class);
                 $kernel->call('migrate', ['--force' => true]);
+
+                // Seed logic
                 $kernel->call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
                 $kernel->call('db:seed', ['--class' => 'ArticleSeeder', '--force' => true]);
 
@@ -89,6 +96,7 @@ try {
                 );
             }
         } catch (\Exception $e) {
+            // Silently fail or log in bootstrap
         }
     });
 
