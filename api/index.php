@@ -1,11 +1,19 @@
 <?php
-// DEPLOY_ID: KING_EMYU_GOAL_2026_V2_CACHE_FIX
-// Last Deployment Force Fix: 2026-02-26 01:00:00 WIB
-// Fixing: "bootstrap/cache directory must be present and writable"
+// DEPLOY_ID: KING_EMYU_ULTIMATE_V4_HTTPS
+// Last Deployment Force Fix: 2026-02-26 01:15:00 WIB
+// Fixing: "Information you're about to submit is not secure" & Write Access
 
 use Illuminate\Http\Request;
+use Illuminate\Foundation\PackageManifest;
+use Illuminate\Filesystem\Filesystem;
 
 define('LARAVEL_START', microtime(true));
+
+// 1. FORCE HTTPS (SATISFY BROWSER SECURITY)
+if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+    $_SERVER['HTTPS'] = 'on';
+    $_SERVER['SERVER_PORT'] = 443;
+}
 
 // Setup temporary storage and cache directories for Vercel
 $storagePath = '/tmp/storage';
@@ -25,29 +33,24 @@ foreach ($dirs as $dir) {
     }
 }
 
-// CRITICAL: Overwrite environment variables BEFORE booting the app
-// This forces Laravel to use /tmp for its discovery files (packages.php, services.php)
-$_ENV['APP_CONFIG_CACHE'] = $cachePath . '/config.php';
-$_ENV['APP_SERVICES_CACHE'] = $cachePath . '/services.php';
-$_ENV['APP_PACKAGES_CACHE'] = $cachePath . '/packages.php';
-$_ENV['APP_ROUTES_CACHE'] = $cachePath . '/routes.php';
-$_ENV['APP_EVENTS_CACHE'] = $cachePath . '/events.php';
-
-foreach ($_ENV as $key => $value) {
-    if (strpos($key, 'APP_') === 0 && strpos($key, '_CACHE') !== false) {
-        putenv("{$key}={$value}");
-    }
-}
-
 try {
     require __DIR__ . '/../vendor/autoload.php';
     $app = require_once __DIR__ . '/../bootstrap/app.php';
 
-    // Force storage and database paths for Vercel
+    // Force storage path
     $app->useStoragePath($storagePath);
 
-    // Auto-setup database at runtime
+    // CRITICAL: Re-register PackageManifest with writable path
+    $app->instance(PackageManifest::class, new PackageManifest(
+        new Filesystem,
+        $app->basePath(),
+        $cachePath . '/packages.php'
+    ));
+
+    // 2. FORCE URL SCHEME TO HTTPS
     $app->booted(function ($app) {
+        \Illuminate\Support\Facades\URL::forceScheme('https');
+
         $tempDb = '/tmp/database.sqlite';
         if (!file_exists($tempDb)) {
             touch($tempDb);
@@ -81,11 +84,10 @@ try {
                 );
             }
         } catch (\Exception $e) {
-            // App continues
         }
     });
 
-    // Handle Request (Compatible with Laravel 8/9/10/11)
+    // Handle Request
     $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
     $response = $kernel->handle(
         $request = Request::capture()
@@ -94,7 +96,7 @@ try {
 
 } catch (\Throwable $e) {
     http_response_code(500);
-    echo "<h1>Vercel Deployment Error</h1>";
+    echo "<h1>Vercel Deployment Error (Ultimate Fix)</h1>";
     echo "<h3>Message: " . $e->getMessage() . "</h3>";
     echo "<p><b>File:</b> " . $e->getFile() . " on line " . $e->getLine() . "</p>";
     echo "<b>Stack Trace:</b><pre>" . $e->getTraceAsString() . "</pre>";
