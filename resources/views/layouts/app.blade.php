@@ -219,14 +219,11 @@
                 <div>
                     <h4 class="text-white font-black uppercase text-xs tracking-widest mb-8">Kategori Populer</h4>
                     <ul class="space-y-4 text-[13px] font-bold">
-                        <li><a href="#" class="hover:text-blue-400 transition flex items-center gap-2"><span
-                                    class="h-1 w-1 bg-blue-500 rounded-full"></span>Politik Nasional</a></li>
-                        <li><a href="#" class="hover:text-blue-400 transition flex items-center gap-2"><span
-                                    class="h-1 w-1 bg-blue-500 rounded-full"></span>Ekonomi & Bisnis</a></li>
-                        <li><a href="#" class="hover:text-blue-400 transition flex items-center gap-2"><span
-                                    class="h-1 w-1 bg-blue-500 rounded-full"></span>Investigasi Utama</a></li>
-                        <li><a href="#" class="hover:text-blue-400 transition flex items-center gap-2"><span
-                                    class="h-1 w-1 bg-blue-500 rounded-full"></span>Internasional</a></li>
+                        @foreach($categoriesWithArticles->take(4) as $foot_cat)
+                            <li><a href="{{ route('category.show', $foot_cat->slug) }}"
+                                    class="hover:text-blue-400 transition flex items-center gap-2"><span
+                                        class="h-1 w-1 bg-blue-500 rounded-full"></span>{{ $foot_cat->name }}</a></li>
+                        @endforeach
                     </ul>
                 </div>
 
