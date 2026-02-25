@@ -11,10 +11,18 @@ class PageController extends Controller
     public function home()
     {
         $featuredArticles = Article::with('category')->where('status', 'published')->latest()->take(5)->get();
-        $latestArticles = Article::with('category')->where('status', 'published')->latest()->skip(5)->take(10)->get();
-        $categories = Category::all();
+        $latestArticles = Article::with('category')->where('status', 'published')->latest()->skip(5)->take(20)->get();
 
-        return view('home', compact('featuredArticles', 'latestArticles', 'categories'));
+        // Fetch categories with at least 3 articles for section display
+        $categoriesWithArticles = Category::with([
+            'articles' => function ($query) {
+                $query->where('status', 'published')->latest()->take(4);
+            }
+        ])->get()->filter(function ($category) {
+            return $category->articles->count() > 0;
+        });
+
+        return view('home', compact('featuredArticles', 'latestArticles', 'categoriesWithArticles'));
     }
 
     public function showArticle($slug)
