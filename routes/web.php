@@ -80,5 +80,9 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::resource('projects', \App\Http\Controllers\Admin\ProjectController::class);
     Route::resource('teams', \App\Http\Controllers\Admin\TeamController::class);
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->except(['show'])->middleware('superadmin');
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('/edit', [\App\Http\Controllers\Admin\CompanyProfileController::class, 'edit'])->name('edit');
+        Route::post('/update', [\App\Http\Controllers\Admin\CompanyProfileController::class, 'update'])->name('update');
+    });
     Route::resource('messages', \App\Http\Controllers\Admin\MessageController::class)->only(['index', 'show', 'destroy']);
 });

@@ -33,7 +33,9 @@ class AppServiceProvider extends ServiceProvider
             ])->get()->filter(function ($cat) {
                 return $cat->articles_count > 0;
             });
+            $companyProfile = \App\Models\CompanyProfile::first() ?? new \App\Models\CompanyProfile();
             $view->with('categoriesWithArticles', $categoriesWithArticles);
+            $view->with('companyProfile', $companyProfile);
         });
     }
 }

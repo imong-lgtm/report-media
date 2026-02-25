@@ -10,7 +10,7 @@
                 <div class="lg:text-center">
                     <h2 class="text-base text-blue-600 font-semibold tracking-wide uppercase">Tentang report.media</h2>
                     <p class="mt-2 text-4xl leading-10 font-extrabold tracking-tight text-gray-900 sm:text-5xl font-serif">
-                        Laporan Mendalam, Investigasi Tajam
+                        {{ $companyProfile->name ?? 'Report Media' }}
                     </p>
                     <p class="mt-4 max-w-3xl text-xl text-gray-500 lg:mx-auto">
                         Kami hadir untuk menyajikan informasi yang tidak hanya cepat, tapi juga akurat dan berimbang untuk
@@ -30,17 +30,24 @@
                         alt="World News">
                 </div>
                 <div class="space-y-6">
-                    <h3 class="text-3xl font-serif font-black text-gray-900">Misi Kami</h3>
-                    <p class="text-lg text-gray-600 leading-relaxed">
-                        Didirikan pada tahun 2026, **report.media** lahir dari kegelisahan akan banjirnya informasi yang
-                        dangkal. Misi kami adalah mengembalikan marwah jurnalisme dengan investigasi yang mendalam dan
-                        pelaporan yang mengedukasi publik.
-                    </p>
-                    <h3 class="text-3xl font-serif font-black text-gray-900 pt-4">Visi Kami</h3>
-                    <p class="text-lg text-gray-600 leading-relaxed">
-                        Menjadi referensi utama berita terpercaya di tanah air yang menjunjung tinggi kode etik jurnalistik
-                        dan transparansi informasi.
-                    </p>
+                    <h3 class="text-3xl font-serif font-black text-gray-900">Profil Perusahaan</h3>
+                    <div class="prose prose-slate text-lg text-gray-600 leading-relaxed">
+                        {!! nl2br(e($companyProfile->profile ?? 'Didirikan pada tahun 2026, report.media lahir dari kegelisahan akan banjirnya informasi yang dangkal.')) !!}
+                    </div>
+
+                    @if($companyProfile->ethics)
+                        <h3 class="text-3xl font-serif font-black text-gray-900 pt-8">Kode Etik Jurnalistik</h3>
+                        <div class="prose prose-slate text-lg text-gray-600 leading-relaxed italic">
+                            {!! nl2br(e($companyProfile->ethics)) !!}
+                        </div>
+                    @endif
+
+                    @if($companyProfile->guidelines)
+                        <h3 class="text-3xl font-serif font-black text-gray-900 pt-8">Pedoman Media Siber</h3>
+                        <div class="prose prose-slate text-lg text-gray-600 leading-relaxed">
+                            {!! nl2br(e($companyProfile->guidelines)) !!}
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

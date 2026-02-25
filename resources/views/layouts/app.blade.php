@@ -93,14 +93,21 @@
     <header class="bg-white border-b border-slate-100 z-50 transition-all duration-300">
         <div class="container mx-auto px-4 py-6 md:py-8 flex flex-col md:flex-row items-center justify-between gap-6">
             <!-- Branding -->
-            <a href="{{ route('home') }}" class="group flex flex-col items-center md:items-start">
-                <h1
-                    class="text-4xl md:text-5xl font-serif font-black tracking-tighter transition-all duration-300 group-hover:text-blue-700">
-                    REPORT<span class="text-blue-600">MEDIA</span>
-                </h1>
+            <div class="group flex flex-col items-center md:items-start">
+                <a href="{{ route('home') }}" class="flex items-center gap-2 group">
+                    @if(isset($companyProfile) && $companyProfile->logo)
+                        <img src="{{ $companyProfile->logo }}" class="h-10 w-auto object-contain"
+                            alt="{{ $companyProfile->name }}">
+                    @else
+                        <h1
+                            class="text-3xl font-serif font-black tracking-tighter text-slate-900 group-hover:text-blue-600 transition-colors">
+                            REPORT<span class="text-blue-600">MEDIA</span>
+                        </h1>
+                    @endif
+                </a>
                 <p class="text-[10px] font-extrabold uppercase tracking-[0.3em] text-slate-400 mt-1">Laporan Investigasi
                     & Berita Terkini</p>
-            </a>
+            </div>
 
             <!-- Search Area -->
             <form action="{{ route('search') }}" method="GET" class="w-full md:w-96 relative group">
@@ -208,12 +215,22 @@
                         terpercaya untuk masyarakat Indonesia.
                     </p>
                     <div class="flex gap-4">
-                        <a href="https://facebook.com"
-                            class="h-10 w-10 flex items-center justify-center bg-slate-800 rounded-xl hover:bg-blue-600 transition text-white text-[10px] font-black uppercase">FB</a>
-                        <a href="https://twitter.com"
-                            class="h-10 w-10 flex items-center justify-center bg-slate-800 rounded-xl hover:bg-blue-400 transition text-white text-[10px] font-black uppercase">TW</a>
-                        <a href="https://instagram.com"
-                            class="h-10 w-10 flex items-center justify-center bg-slate-800 rounded-xl hover:bg-gradient-to-tr from-orange-400 to-rose-600 transition text-white text-[10px] font-black uppercase">IG</a>
+                        @if($companyProfile->facebook)
+                            <a href="{{ $companyProfile->facebook }}" target="_blank"
+                                class="h-10 w-10 flex items-center justify-center bg-slate-800 rounded-xl hover:bg-blue-600 transition text-white text-[10px] font-black uppercase">FB</a>
+                        @endif
+                        @if($companyProfile->twitter)
+                            <a href="{{ $companyProfile->twitter }}" target="_blank"
+                                class="h-10 w-10 flex items-center justify-center bg-slate-800 rounded-xl hover:bg-blue-400 transition text-white text-[10px] font-black uppercase">TW</a>
+                        @endif
+                        @if($companyProfile->instagram)
+                            <a href="{{ $companyProfile->instagram }}" target="_blank"
+                                class="h-10 w-10 flex items-center justify-center bg-slate-800 rounded-xl hover:bg-gradient-to-tr from-orange-400 to-rose-600 transition text-white text-[10px] font-black uppercase">IG</a>
+                        @endif
+                        @if($companyProfile->youtube)
+                            <a href="{{ $companyProfile->youtube }}" target="_blank"
+                                class="h-10 w-10 flex items-center justify-center bg-slate-800 rounded-xl hover:bg-red-600 transition text-white text-[10px] font-black uppercase">YT</a>
+                        @endif
                     </div>
                 </div>
 
@@ -245,10 +262,8 @@
                     <div class="mt-8 pt-8 border-t border-slate-800">
                         <h4 class="text-white font-black uppercase text-[10px] tracking-widest mb-4 opacity-50">
                             Headquarters</h4>
-                        <p class="text-[11px] font-bold text-slate-500 leading-relaxed">
-                            Gedung Report Media, Lt. 5<br>
-                            Jl. Kebon Sirih No. 17-19<br>
-                            Jakarta Pusat, 10340
+                        <p class="text-[11px] font-bold text-slate-500 leading-relaxed italic">
+                            {!! nl2br(e($companyProfile->address ?? 'Gedung Report Media, Lt. 5\nJl. Kebon Sirih No. 17-19\nJakarta Pusat, 10340')) !!}
                         </p>
                     </div>
                 </div>
