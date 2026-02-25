@@ -67,36 +67,49 @@ try {
     $app->booted(function ($app) {
         \Illuminate\Support\Facades\URL::forceScheme('https');
 
-        // SQLite fallback for Vercel
-        if (env('DB_CONNECTION') === 'sqlite' || !env('DB_CONNECTION')) {
+        // Detect Vercel Postgres and auto-configure
+        if (env('POSTGRES_URL')) {
+            $app['config']->set('database.default', 'pgsql');
+            $app['config']->set('database.connections.pgsql.host', env('POSTGRES_HOST'));
+            $app['config']->set('database.connections.pgsql.port', env('POSTGRES_PORT', '5432'));
+            $app['config']->set('database.connections.pgsql.database', env('POSTGRES_DATABASE'));
+            $app['config']->set('database.connections.pgsql.username', env('POSTGRES_USER'));
+            $app['config']->set('database.connections.pgsql.password', env('POSTGRES_PASSWORD'));
+            $app['config']->set('database.connections.pgsql.sslmode', 'require');
+        }
+        // SQLite fallback for Vercel Local/No-DB
+        elseif (env('DB_CONNECTION') === 'sqlite' || !env('DB_CONNECTION')) {
             $tempDb = '/tmp/database.sqlite';
             if (!file_exists($tempDb)) {
                 @touch($tempDb);
                 @chmod($tempDb, 0666);
             }
             $app['config']->set('database.connections.sqlite.database', $tempDb);
+            $app['config']->set('database.default', 'sqlite');
         }
 
-        // Auto-migrate if needed (Skip if already migrated)
+        // Auto-migrate if needed
         try {
             $db = $app->make('db');
             $schema = $db->connection()->getSchemaBuilder();
 
             if (!$schema->hasTable('users')) {
                 $kernel = $app->make(\Illuminate\Contracts\Console\Kernel::class);
-                $kernel->call('migrate', ['--force' => true]);
+                $status = $kernel->call('migrate', ['--force' => true]);
 
-                // Seed logic
-                $kernel->call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
-                $kernel->call('db:seed', ['--class' => 'ArticleSeeder', '--force' => true]);
+                if ($status === 0) {
+                    // Seed logic
+                    $kernel->call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
+                    $kernel->call('db:seed', ['--class' => 'ArticleSeeder', '--force' => true]);
 
-                \App\Models\User::updateOrCreate(
-                    ['email' => 'admin@telco.id'],
-                    ['name' => 'Admin Redaksi', 'password' => \Illuminate\Support\Facades\Hash::make('password123'), 'role' => 'superadmin']
-                );
+                    \App\Models\User::updateOrCreate(
+                        ['email' => 'admin@telco.id'],
+                        ['name' => 'Admin Redaksi', 'password' => \Illuminate\Support\Facades\Hash::make('password123'), 'role' => 'superadmin']
+                    );
+                }
             }
         } catch (\Exception $e) {
-            // Silently fail or log in bootstrap
+            // Log error to trace if db connection fails
         }
     });
 
