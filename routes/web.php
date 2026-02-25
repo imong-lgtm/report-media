@@ -61,6 +61,7 @@ Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/services', [PageController::class, 'services'])->name('services');
 Route::get('/projects', [PageController::class, 'projects'])->name('projects');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+Route::get('/category/{slug}', [PageController::class, 'category'])->name('category.show');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 // Auth Routes
@@ -72,7 +73,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/', \App\Http\Controllers\Admin\AdminController::class)->name('dashboard');
     Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class)->except(['show', 'edit', 'update']);
-    Route::resource('articles', \App\Http\Controllers\Admin\ArticleController . php);
+    Route::resource('articles', \App\Http\Controllers\Admin\ArticleController::class);
     Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class);
     Route::resource('projects', \App\Http\Controllers\Admin\ProjectController::class);
     Route::resource('teams', \App\Http\Controllers\Admin\TeamController::class);

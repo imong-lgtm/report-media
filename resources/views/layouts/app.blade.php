@@ -142,7 +142,7 @@
                         class="px-4 py-2 text-[13px] font-black uppercase text-blue-600 border-b-2 border-blue-600">Home</a>
                     @if(isset($categoriesWithArticles))
                         @foreach($categoriesWithArticles as $nav_cat)
-                            <a href="#"
+                            <a href="{{ route('category.show', $nav_cat->slug) }}"
                                 class="px-4 py-2 text-[13px] font-bold uppercase text-slate-500 hover:text-blue-600 transition-colors">{{ $nav_cat->name }}</a>
                         @endforeach
                     @endif

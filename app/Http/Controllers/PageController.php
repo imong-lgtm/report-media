@@ -59,4 +59,24 @@ class PageController extends Controller
     {
         return view('contact');
     }
+
+    public function category($slug)
+    {
+        $category = Category::where('slug', $slug)->firstOrFail();
+        $articles = Article::with(['category', 'user'])
+            ->where('category_id', $category->id)
+            ->where('status', 'published')
+            ->latest()
+            ->paginate(12);
+
+        $categoriesWithArticles = Category::withCount([
+            'articles' => function ($query) {
+                $query->where('status', 'published');
+            }
+        ])->get()->filter(function ($cat) {
+            return $cat->articles_count > 0;
+        });
+
+        return view('category', compact('category', 'articles', 'categoriesWithArticles'));
+    }
 }

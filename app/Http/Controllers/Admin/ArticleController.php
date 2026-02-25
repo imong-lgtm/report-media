@@ -34,7 +34,10 @@ class ArticleController extends Controller
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('articles', 'public');
+            $file = $request->file('image');
+            $type = $file->getClientOriginalExtension();
+            $data = file_get_contents($file->getRealPath());
+            $imagePath = 'data:image/' . $type . ';base64,' . base64_encode($data);
         }
 
         Article::create([
@@ -67,8 +70,10 @@ class ArticleController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('articles', 'public');
-            $article->image = $imagePath;
+            $file = $request->file('image');
+            $type = $file->getClientOriginalExtension();
+            $data = file_get_contents($file->getRealPath());
+            $article->image = 'data:image/' . $type . ';base64,' . base64_encode($data);
         }
 
         $article->update([
