@@ -30,8 +30,10 @@ class ProjectController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('projects', 'public');
-            $validated['image'] = Storage::url($path);
+            $file = $request->file('image');
+            $type = $file->getClientOriginalExtension();
+            $data = file_get_contents($file->getRealPath());
+            $validated['image'] = 'data:image/' . $type . ';base64,' . base64_encode($data);
         }
 
         Project::create($validated);
@@ -54,14 +56,10 @@ class ProjectController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // Delete old image if it exists and is a local file
-            if ($project->image && str_contains($project->image, '/storage/')) {
-                $oldPath = str_replace('/storage/', '', $project->image);
-                Storage::disk('public')->delete($oldPath);
-            }
-
-            $path = $request->file('image')->store('projects', 'public');
-            $validated['image'] = Storage::url($path);
+            $file = $request->file('image');
+            $type = $file->getClientOriginalExtension();
+            $data = file_get_contents($file->getRealPath());
+            $validated['image'] = 'data:image/' . $type . ';base64,' . base64_encode($data);
         }
 
         $project->update($validated);
@@ -71,10 +69,6 @@ class ProjectController extends Controller
 
     public function destroy(Project $project)
     {
-        if ($project->image && str_contains($project->image, '/storage/')) {
-            $oldPath = str_replace('/storage/', '', $project->image);
-            Storage::disk('public')->delete($oldPath);
-        }
         $project->delete();
         return redirect()->route('admin.projects.index')->with('success', 'Project deleted successfully.');
     }

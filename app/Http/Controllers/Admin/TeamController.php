@@ -29,8 +29,10 @@ class TeamController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('team', 'public');
-            $validated['image'] = Storage::url($path);
+            $file = $request->file('image');
+            $type = $file->getClientOriginalExtension();
+            $data = file_get_contents($file->getRealPath());
+            $validated['image'] = 'data:image/' . $type . ';base64,' . base64_encode($data);
         }
 
         Team::create($validated);
@@ -52,14 +54,10 @@ class TeamController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // Delete old image if it exists and is a local file
-            if ($team->image && str_contains($team->image, '/storage/')) {
-                $oldPath = str_replace('/storage/', '', $team->image);
-                Storage::disk('public')->delete($oldPath);
-            }
-
-            $path = $request->file('image')->store('team', 'public');
-            $validated['image'] = Storage::url($path);
+            $file = $request->file('image');
+            $type = $file->getClientOriginalExtension();
+            $data = file_get_contents($file->getRealPath());
+            $validated['image'] = 'data:image/' . $type . ';base64,' . base64_encode($data);
         }
 
         $team->update($validated);
@@ -69,10 +67,6 @@ class TeamController extends Controller
 
     public function destroy(Team $team)
     {
-        if ($team->image && str_contains($team->image, '/storage/')) {
-            $oldPath = str_replace('/storage/', '', $team->image);
-            Storage::disk('public')->delete($oldPath);
-        }
         $team->delete();
         return redirect()->route('admin.teams.index')->with('success', 'Team member removed successfully.');
     }

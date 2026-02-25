@@ -29,8 +29,10 @@ class ServiceController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('services', 'public');
-            $validated['image'] = Storage::url($path);
+            $file = $request->file('image');
+            $type = $file->getClientOriginalExtension();
+            $data = file_get_contents($file->getRealPath());
+            $validated['image'] = 'data:image/' . $type . ';base64,' . base64_encode($data);
         }
 
         Service::create($validated);
@@ -52,14 +54,10 @@ class ServiceController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // Delete old image if it exists and is a local file
-            if ($service->image && str_contains($service->image, '/storage/')) {
-                $oldPath = str_replace('/storage/', '', $service->image);
-                Storage::disk('public')->delete($oldPath);
-            }
-
-            $path = $request->file('image')->store('services', 'public');
-            $validated['image'] = Storage::url($path);
+            $file = $request->file('image');
+            $type = $file->getClientOriginalExtension();
+            $data = file_get_contents($file->getRealPath());
+            $validated['image'] = 'data:image/' . $type . ';base64,' . base64_encode($data);
         }
 
         $service->update($validated);
@@ -69,10 +67,6 @@ class ServiceController extends Controller
 
     public function destroy(Service $service)
     {
-        if ($service->image && str_contains($service->image, '/storage/')) {
-            $oldPath = str_replace('/storage/', '', $service->image);
-            Storage::disk('public')->delete($oldPath);
-        }
         $service->delete();
         return redirect()->route('admin.services.index')->with('success', 'Service deleted successfully.');
     }

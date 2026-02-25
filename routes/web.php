@@ -72,7 +72,10 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/', \App\Http\Controllers\Admin\AdminController::class)->name('dashboard');
     Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class)->except(['show', 'edit', 'update']);
-    Route::resource('articles', \App\Http\Controllers\Admin\ArticleController::class);
+    Route::resource('articles', \App\Http\Controllers\Admin\ArticleController . php);
+    Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class);
+    Route::resource('projects', \App\Http\Controllers\Admin\ProjectController::class);
+    Route::resource('teams', \App\Http\Controllers\Admin\TeamController::class);
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->except(['show'])->middleware('superadmin');
     Route::resource('messages', \App\Http\Controllers\Admin\MessageController::class)->only(['index', 'show', 'destroy']);
 });
