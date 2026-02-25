@@ -53,31 +53,33 @@ try {
 
     // AUTO-REPAIR: Ensure DB is ready BEFORE handling the request
     if (!isset($_SERVER['ARTISAN_RUNNING'])) {
+        // Force the database path in Laravel config
+        \Illuminate\Support\Facades\Config::set('database.connections.sqlite.database', '/tmp/database.sqlite');
+
+        // Check if essential tables exist
         try {
-            // Check if essential tables exist
             $tablesExist = \Illuminate\Support\Facades\Schema::hasTable('users') &&
                 \Illuminate\Support\Facades\Schema::hasTable('articles');
-
-            if (!$tablesExist) {
-                // Run migrations and seeders
-                \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
-                \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
-                \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ArticleSeeder', '--force' => true]);
-
-                // Create Default Fallback Admin
-                \App\Models\User::updateOrCreate(
-                ['email' => 'admin@telecom.test'],
-                [
-                    'name' => 'Admin Redaksi',
-                    'password' => \Illuminate\Support\Facades\Hash::make('password123'),
-                    'role' => 'superadmin',
-                ]
-                );
-            }
         }
         catch (\Throwable $e) {
-            // Log error to a file in /tmp for debugging if possible
-            file_put_contents('/tmp/repair_error.log', $e->getMessage());
+            $tablesExist = false;
+        }
+
+        if (!$tablesExist) {
+            // Run migrations and seeders (Errors will bubble up to main handler)
+            \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
+            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
+            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'ArticleSeeder', '--force' => true]);
+
+            // Create Default Fallback Admin
+            \App\Models\User::updateOrCreate(
+            ['email' => 'admin@telecom.test'],
+            [
+                'name' => 'Admin Redaksi',
+                'password' => \Illuminate\Support\Facades\Hash::make('password123'),
+                'role' => 'superadmin',
+            ]
+            );
         }
     }
 
