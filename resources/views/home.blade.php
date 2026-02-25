@@ -13,7 +13,7 @@
                     class="lg:col-span-2 group cursor-pointer relative overflow-hidden rounded-2xl bg-black border border-slate-100 shadow-xl shadow-blue-50">
                     @php $main = $featuredArticles->first(); @endphp
                     <div class="aspect-[4/3] md:aspect-[16/10] w-full overflow-hidden">
-                        <img src="{{ $main->image ? asset('storage/' . $main->image) : 'https://images.unsplash.com/photo-1504715603422-59e1b7987e3f?q=80&w=2070&auto=format&fit=crop' }}"
+                        <img src="{{ $main->image ?? 'https://images.unsplash.com/photo-1504715603422-59e1b7987e3f?q=80&w=2070&auto=format&fit=crop' }}"
                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-90">
                     </div>
                     <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent"></div>
@@ -40,7 +40,7 @@
                         <div
                             class="group flex gap-5 bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-50/50 transition-all">
                             <div class="w-32 h-24 md:w-40 md:h-28 rounded-xl overflow-hidden flex-shrink-0">
-                                <img src="{{ $art->image ? asset('storage/' . $art->image) : 'https://images.unsplash.com/photo-1585829365234-781fcd04c8.q=80&w=2070&auto=format&fit=crop' }}"
+                                <img src="{{ $art->image ?? 'https://images.unsplash.com/photo-1585829365234-781fcd04c8.q=80&w=2070&auto=format&fit=crop' }}"
                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                             </div>
                             <div class="flex flex-col justify-center">
@@ -80,7 +80,7 @@
                             @foreach($category->articles->take(4) as $article)
                                 <div class="group flex flex-col md:flex-row gap-4">
                                     <div class="w-full md:w-32 h-44 md:h-24 rounded-xl overflow-hidden flex-shrink-0 bg-slate-100">
-                                        <img src="{{ $article->image ? asset('storage/' . $article->image) : 'https://images.unsplash.com/photo-1546422904-90eab23c3d7e?q=80&w=2072&auto=format&fit=crop' }}"
+                                        <img src="{{ $article->image ?? 'https://images.unsplash.com/photo-1546422904-90eab23c3d7e?q=80&w=2072&auto=format&fit=crop' }}"
                                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                                     </div>
                                     <div class="flex flex-col">
@@ -115,7 +115,7 @@
                                 class="group flex flex-col md:flex-row gap-8 pb-10 border-b border-slate-100 last:border-0 hover-lift">
                                 <div
                                     class="w-full md:w-64 h-44 rounded-2xl overflow-hidden flex-shrink-0 shadow-lg shadow-slate-100">
-                                    <img src="{{ $article->image ? asset('storage/' . $article->image) : 'https://images.unsplash.com/photo-1546422904-90eab23c3d7e?q=80&w=2072&auto=format&fit=crop' }}"
+                                    <img src="{{ $article->image ?? 'https://images.unsplash.com/photo-1546422904-90eab23c3d7e?q=80&w=2072&auto=format&fit=crop' }}"
                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                                 </div>
                                 <div class="flex-1">
