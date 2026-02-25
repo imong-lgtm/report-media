@@ -47,6 +47,7 @@ $_ENV['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
 putenv("VIEW_COMPILED_PATH=/tmp/storage/framework/views");
 
 try {
+    require __DIR__ . '/../vendor/autoload.php';
     $app = require_once __DIR__ . '/../bootstrap/app.php';
     $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 
