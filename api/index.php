@@ -1,18 +1,42 @@
 <?php
-// DEPLOY_ID: KING_EMYU_GOAL_2026_V1
-// Last Deployment Force Fix: 2026-02-26 00:53:00 WIB
-// Compatible with Laravel 8/9/10/11 - Bypassing Facade root errors.
+// DEPLOY_ID: KING_EMYU_GOAL_2026_V2_CACHE_FIX
+// Last Deployment Force Fix: 2026-02-26 01:00:00 WIB
+// Fixing: "bootstrap/cache directory must be present and writable"
 
 use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
-// Setup temporary storage directories for Vercel
-if (!is_dir('/tmp/storage')) {
-    mkdir('/tmp/storage', 0777, true);
-    mkdir('/tmp/storage/framework/views', 0777, true);
-    mkdir('/tmp/storage/framework/cache', 0777, true);
-    mkdir('/tmp/storage/framework/sessions', 0777, true);
+// Setup temporary storage and cache directories for Vercel
+$storagePath = '/tmp/storage';
+$cachePath = '/tmp/bootstrap/cache';
+
+$dirs = [
+    $storagePath . '/framework/views',
+    $storagePath . '/framework/cache',
+    $storagePath . '/framework/sessions',
+    $storagePath . '/logs',
+    $cachePath,
+];
+
+foreach ($dirs as $dir) {
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0777, true);
+    }
+}
+
+// CRITICAL: Overwrite environment variables BEFORE booting the app
+// This forces Laravel to use /tmp for its discovery files (packages.php, services.php)
+$_ENV['APP_CONFIG_CACHE'] = $cachePath . '/config.php';
+$_ENV['APP_SERVICES_CACHE'] = $cachePath . '/services.php';
+$_ENV['APP_PACKAGES_CACHE'] = $cachePath . '/packages.php';
+$_ENV['APP_ROUTES_CACHE'] = $cachePath . '/routes.php';
+$_ENV['APP_EVENTS_CACHE'] = $cachePath . '/events.php';
+
+foreach ($_ENV as $key => $value) {
+    if (strpos($key, 'APP_') === 0 && strpos($key, '_CACHE') !== false) {
+        putenv("{$key}={$value}");
+    }
 }
 
 try {
@@ -20,7 +44,7 @@ try {
     $app = require_once __DIR__ . '/../bootstrap/app.php';
 
     // Force storage and database paths for Vercel
-    $app->useStoragePath('/tmp/storage');
+    $app->useStoragePath($storagePath);
 
     // Auto-setup database at runtime
     $app->booted(function ($app) {
@@ -30,7 +54,6 @@ try {
             chmod($tempDb, 0666);
         }
 
-        // Use direct $app instance access to avoid "Facade root not set"
         $app['config']->set('database.connections.sqlite.database', $tempDb);
 
         try {
@@ -41,7 +64,6 @@ try {
                 $kernel = $app->make(\Illuminate\Contracts\Console\Kernel::class);
                 $kernel->call('migrate', ['--force' => true]);
 
-                // Seed for Newspaper Project
                 if (file_exists(__DIR__ . '/../database/seeders/CategorySeeder.php')) {
                     $kernel->call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
                 }
@@ -49,7 +71,6 @@ try {
                     $kernel->call('db:seed', ['--class' => 'ArticleSeeder', '--force' => true]);
                 }
 
-                // Create Default Fallback Admin
                 \App\Models\User::updateOrCreate(
                     ['email' => 'admin@telco.id'],
                     [
@@ -64,7 +85,7 @@ try {
         }
     });
 
-    // Handle Request (Compatible with Laravel 8/9/10)
+    // Handle Request (Compatible with Laravel 8/9/10/11)
     $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
     $response = $kernel->handle(
         $request = Request::capture()
