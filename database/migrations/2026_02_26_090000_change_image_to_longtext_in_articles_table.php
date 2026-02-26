@@ -1,23 +1,25 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
 class ChangeImageToLongtextInArticlesTable extends Migration
 {
     public function up()
     {
-        Schema::table('articles', function (Blueprint $table) {
-            $table->longText('image')->nullable()->change();
-        });
+        $driver = DB::connection()->getDriverName();
+
+        if ($driver === 'pgsql') {
+            DB::statement('ALTER TABLE articles ALTER COLUMN image TYPE TEXT');
+        } else {
+            // SQLite doesn't enforce column length, so no change needed
+            // But for MySQL if ever used:
+            DB::statement('SELECT 1'); // no-op for SQLite
+        }
     }
 
     public function down()
     {
-        Schema::table('articles', function (Blueprint $table) {
-            $table->string('image')->nullable()->change();
-        });
+        // Reversing TEXT to VARCHAR is lossy; skip for safety
     }
 }
