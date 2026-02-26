@@ -70,6 +70,13 @@ try {
         // Detect Vercel Postgres and auto-configure
         if (env('POSTGRES_URL')) {
             $app['config']->set('database.default', 'pgsql');
+            // If POSTGRES_URL is provided, Laravel can use it directly via 'url' key
+            $app['config']->set('database.connections.pgsql.url', env('POSTGRES_URL'));
+            $app['config']->set('database.connections.pgsql.sslmode', 'require');
+        }
+        // Fallback to individual vars if URL not set but others are
+        elseif (env('POSTGRES_HOST')) {
+            $app['config']->set('database.default', 'pgsql');
             $app['config']->set('database.connections.pgsql.host', env('POSTGRES_HOST'));
             $app['config']->set('database.connections.pgsql.port', env('POSTGRES_PORT', '5432'));
             $app['config']->set('database.connections.pgsql.database', env('POSTGRES_DATABASE'));
@@ -93,23 +100,30 @@ try {
             $db = $app->make('db');
             $schema = $db->connection()->getSchemaBuilder();
 
-            if (!$schema->hasTable('users')) {
+            // Run migration if any core table is missing
+            if (!$schema->hasTable('users') || !$schema->hasTable('company_profiles') || !$schema->hasTable('articles')) {
                 $kernel = $app->make(\Illuminate\Contracts\Console\Kernel::class);
                 $status = $kernel->call('migrate', ['--force' => true]);
 
                 if ($status === 0) {
-                    // Seed logic
-                    $kernel->call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
-                    $kernel->call('db:seed', ['--class' => 'ArticleSeeder', '--force' => true]);
+                    // Seed logic only if users table was just created
+                    if ($schema->hasTable('users') && \App\Models\User::count() === 0) {
+                        $kernel->call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
+                        $kernel->call('db:seed', ['--class' => 'ArticleSeeder', '--force' => true]);
 
-                    \App\Models\User::updateOrCreate(
-                        ['email' => 'admin@telco.id'],
-                        ['name' => 'Admin Redaksi', 'password' => \Illuminate\Support\Facades\Hash::make('password123'), 'role' => 'superadmin']
-                    );
+                        \App\Models\User::updateOrCreate(
+                            ['email' => 'admin@telco.id'],
+                            ['name' => 'Admin Redaksi', 'password' => \Illuminate\Support\Facades\Hash::make('password123'), 'role' => 'superadmin']
+                        );
+                    }
                 }
+            } else {
+                // If tables exist, still run migrate to ensure NEW migrations (like column changes) are applied
+                $kernel = $app->make(\Illuminate\Contracts\Console\Kernel::class);
+                $kernel->call('migrate', ['--force' => true]);
             }
         } catch (\Exception $e) {
-            // Log error to trace if db connection fails
+            \Illuminate\Support\Facades\Log::error('DB Auto-setup failed: ' . $e->getMessage());
         }
     });
 
