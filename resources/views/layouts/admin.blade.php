@@ -12,19 +12,45 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+
+        /* Mobile sidebar overlay */
+        .sidebar-overlay {
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-panel {
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-panel.closed {
+            transform: translateX(-100%);
+        }
     </style>
 </head>
 
 <body class="bg-gray-50 text-gray-900">
     <div class="min-h-screen flex">
+
+        <!-- Mobile Overlay (hidden on desktop) -->
+        <div id="sidebarOverlay" class="sidebar-overlay fixed inset-0 bg-black/50 z-40 lg:hidden hidden"
+            onclick="toggleSidebar()"></div>
+
         <!-- Sidebar -->
-        <aside class="w-64 bg-gray-900 text-white flex-shrink-0 flex flex-col">
-            <div class="p-6 border-b border-gray-800">
+        <aside id="sidebar"
+            class="sidebar-panel closed lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-gray-900 text-white flex-shrink-0 flex flex-col">
+            <div class="p-6 border-b border-gray-800 flex justify-between items-center">
                 <a href="{{ route('admin.dashboard') }}" class="text-xl font-bold text-blue-400">
                     TP-Admin
                 </a>
+                <!-- Close button (mobile only) -->
+                <button onclick="toggleSidebar()" class="lg:hidden text-gray-400 hover:text-white">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
-            <nav class="flex-1 p-4 space-y-2">
+            <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
                 <a href="{{ route('admin.dashboard') }}"
                     class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-800 transition {{ request()->routeIs('admin.dashboard') ? 'bg-blue-600 text-white' : 'text-gray-400' }}">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -88,17 +114,26 @@
         </aside>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col">
-            <header class="bg-white border-b border-gray-200 px-8 py-4 flex justify-between items-center">
-                <h2 class="text-lg font-semibold text-gray-800">@yield('title', 'Dashboard')</h2>
-                <div class="flex items-center gap-4">
-                    <span class="text-sm font-medium text-gray-600">Admin User</span>
+        <div class="flex-1 flex flex-col min-w-0">
+            <header class="bg-white border-b border-gray-200 px-4 md:px-8 py-4 flex justify-between items-center">
+                <!-- Hamburger (mobile only) -->
+                <button onclick="toggleSidebar()" class="lg:hidden text-gray-600 hover:text-gray-900 mr-4">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+                <h2 class="text-base md:text-lg font-semibold text-gray-800 truncate">@yield('title', 'Dashboard')</h2>
+                <div class="flex items-center gap-2 md:gap-4 flex-shrink-0">
+                    <span
+                        class="text-xs md:text-sm font-medium text-gray-600 hidden sm:inline">{{ auth()->user()->name }}</span>
                     <div
-                        class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
-                        A</div>
+                        class="h-8 w-8 md:h-10 md:w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs md:text-sm">
+                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    </div>
                 </div>
             </header>
-            <main class="p-8">
+            <main class="p-4 md:p-8">
                 @if(session('success'))
                     <div class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-r-xl">
                         <p class="text-sm text-green-700 font-medium">{{ session('success') }}</p>
@@ -108,6 +143,16 @@
             </main>
         </div>
     </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            sidebar.classList.toggle('closed');
+            overlay.classList.toggle('hidden');
+        }
+    </script>
 </body>
 
 </html>
