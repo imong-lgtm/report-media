@@ -22,8 +22,10 @@
             transition: transform 0.3s ease;
         }
 
-        .sidebar-panel.closed {
-            transform: translateX(-100%);
+        @media (max-width: 1023px) {
+            .sidebar-panel.closed {
+                transform: translateX(-100%);
+            }
         }
     </style>
 </head>
@@ -37,7 +39,7 @@
 
         <!-- Sidebar -->
         <aside id="sidebar"
-            class="sidebar-panel closed lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-gray-900 text-white flex-shrink-0 flex flex-col">
+            class="sidebar-panel closed fixed lg:static inset-y-0 left-0 z-50 w-64 bg-gray-900 text-white flex-shrink-0 flex flex-col">
             <div class="p-6 border-b border-gray-800 flex justify-between items-center">
                 <a href="{{ route('admin.dashboard') }}" class="text-xl font-bold text-blue-400">
                     TP-Admin
