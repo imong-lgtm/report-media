@@ -56,9 +56,8 @@
                 </div>
 
                 <!-- Main Image -->
-                @if($article->image)
                     <figure class="mb-10 rounded-2xl overflow-hidden shadow-2xl shadow-blue-50">
-                        <img src="{{ asset('storage/' . $article->image) }}" class="w-full h-auto" alt="{{ $article->title }}">
+                        <img src="{{ $article->image }}" class="w-full h-auto" alt="{{ $article->title }}">
                         @if($article->caption)
                             <figcaption
                                 class="p-4 bg-slate-50 text-slate-500 text-[11px] font-bold italic border-t border-slate-100">

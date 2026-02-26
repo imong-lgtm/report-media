@@ -40,7 +40,7 @@
                         <div
                             class="group flex gap-5 bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-50/50 transition-all">
                             <div class="w-32 h-24 md:w-40 md:h-28 rounded-xl overflow-hidden flex-shrink-0">
-                                <img src="{{ $art->image ?? 'https://images.unsplash.com/photo-1585829365234-781fcd04c8.q=80&w=2070&auto=format&fit=crop' }}"
+                                <img src="{{ $art->image ?? 'https://images.unsplash.com/photo-1585829365234-781fcd04c8?q=80&w=2070&auto=format&fit=crop' }}"
                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                             </div>
                             <div class="flex flex-col justify-center">
