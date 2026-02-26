@@ -66,9 +66,9 @@ Route::get('/search', [PageController::class, 'search'])->name('search');
 Route::post('/newsletter', [ContactController::class, 'newsletter'])->name('newsletter.subscribe');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
-// Auth Routes
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+// Auth Routes (Secret Path)
+Route::get('/rahasia-admin', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/rahasia-admin', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Admin Routes

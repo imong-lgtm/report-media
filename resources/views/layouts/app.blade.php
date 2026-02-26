@@ -122,24 +122,9 @@
                 </button>
             </form>
 
-            <!-- User/Auth -->
+            <!-- User/Auth Hidden for Security -->
             <div class="hidden lg:flex items-center gap-4">
-                @auth
-                    <a href="{{ route('admin.dashboard') }}"
-                        class="flex items-center gap-3 bg-slate-900 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:scale-105 transition-transform active:scale-95 shadow-lg shadow-slate-200">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                        Admin Dashboard
-                    </a>
-                @else
-                    <a href="{{ route('login') }}"
-                        class="text-sm font-extrabold text-slate-600 hover:text-blue-600 transition tracking-tight">MASUK
-                        ADMIN</a>
-                    <div class="h-4 w-px bg-slate-200"></div>
-                    <a href="#" class="text-sm font-extrabold text-blue-600 hover:underline tracking-tight">LANGGANAN</a>
-                @endauth
+                <a href="#" class="text-sm font-extrabold text-blue-600 hover:underline tracking-tight">LANGGANAN</a>
             </div>
         </div>
 
